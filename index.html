@@ -145,18 +145,17 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
         width: 80mm; 
         margin: 0; 
         padding: 0; 
-        font-family: 'Courier New', Courier, monospace !important; /* TAMBAHAN INI */
+        font-family: 'Courier New', Courier, monospace !important; 
         font-size: 14px !important;
     }
     pre { 
         width: 80mm !important; 
         max-width: 80mm !important; 
-        font-family: 'Courier New', Courier, monospace !important; /* TAMBAHAN INI */
+        font-family: 'Courier New', Courier, monospace !important; 
     }
 }
-</style>
-  
-</head>
+     </style>
+  </head>
 <body>
 <header id="appHeader" class="hidden"> 
   <h1>🍕 JIF PIZZA CONDET</h1>
@@ -216,9 +215,8 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     <h3 id="totalDisplay" style="color: #2e7d32; margin-top: 10px;">TOTAL BAYAR: Rp 0</h3> 
     <button class="btn primary" onclick="payment()">Bayar & Cetak</button>
   </div>
-</div>
-
-<div id="menuPage" class="container hidden">
+    </div>
+        <div id="menuPage" class="container hidden">
   <h3>Tambah Menu (Manajer Only)</h3>
   <input id="mName" placeholder="Nama menu (misal: Mix Lovers)"/>
   
@@ -300,8 +298,7 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-
-// ======================================================================
+  // ======================================================================
 // FUNGSI INTI & UTILITY
 // ======================================================================
 
@@ -449,8 +446,8 @@ function activateTab(tab){
   }
   
   setActiveTab(tab); 
-}
-// ======================================================================
+  }
+  // ======================================================================
 // FUNGSI KASIR & TRANSAKSI (UPDATED DENGAN LOGIKA DISKON)
 // ======================================================================
 
@@ -587,16 +584,16 @@ function saveTransaction(subtotal, discountAmount, finalTotal, customerNote){
     saveStore();
 }
 
-// UPDATED: printStruk (Menampilkan Diskon)
+// UPDATED: printStruk (Menampilkan Diskon dan Pemisah Titik)
 function printStruk(subtotal, discountAmount, finalTotal, bayar, kembali, note){
     const now = new Date().toLocaleString("id-ID");
-    const MAX_WIDTH = 42; 
+    const MAX_WIDTH = 42; // FIXED: MENGGUNAKAN 42
 
     const createStrukLine = (name, qty, price) => {
         const totalStr = formatRp(price * qty).padStart(12);
         const namePart = `${name} x${qty}`;
         const space = MAX_WIDTH - namePart.length - totalStr.length;
-        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`;
+        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalStr}`; // FIXED: Ganti spasi jadi titik
     };
     
     const noteLine = `Pelanggan: ${note.substring(0, MAX_WIDTH - 11)}`; 
@@ -611,17 +608,14 @@ function printStruk(subtotal, discountAmount, finalTotal, bayar, kembali, note){
 🍕 JIF PIZZA CONDET by Adit
 Kasir: ${currentUser.email}
 Tanggal: ${now}
-${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-${cart.map(i => createStrukLine(i.name, i.qty, i.price)).join('\n')}
-${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-Subtotal:     ${formatRp(subtotal).padStart(12)}
+${'________________________________________________'.substring(0, MAX_WIDTH)} ${cart.map(i => createStrukLine(i.name, i.qty, i.price)).join('\n')}
+${'________________________________________________'.substring(0, MAX_WIDTH)} Subtotal:     ${formatRp(subtotal).padStart(12)}
 ${discountText ? discountText + '\n' : ''}Total Akhir:  ${formatRp(finalTotal).padStart(12)}
 Bayar:        ${formatRp(bayar).padStart(12)}
 Kembali:      ${formatRp(kembali).padStart(12)}
 Order: ${orderType}
 ${noteLine}
-${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-Terima kasih!
+${'________________________________________________'.substring(0, MAX_WIDTH)} Terima kasih!
         </pre>
     `);
     w.print();
@@ -797,9 +791,8 @@ function deleteTransaction(id) {
         alert("Transaksi berhasil dihapus.");
         showReport('today'); 
     }
-}
-
-// ======================================================================
+  }
+  // ======================================================================
 // FUNGSI LAPORAN & CLOSING (UPDATED)
 // ======================================================================
 
@@ -992,13 +985,13 @@ function printClosing(){
     const totalDiscount = trx.reduce((acc, t) => acc + (t.discountAmount || 0), 0);
     const totalSales = trx.reduce((acc, t) => acc + t.total, 0);
 
-    const MAX_WIDTH = 42; 
+    const MAX_WIDTH = 42; // FIXED: MENGGUNAKAN 42
 
-    const padLine = (label, value) => {
+    const padLine = (label, value) => { // Fungsi untuk Ringkasan
         const valueStr = String(value);
         const labelLen = label.length;
         const space = MAX_WIDTH - labelLen - valueStr.length;
-        return `${label}${Array(space > 0 ? space : 1).join(' ')}${valueStr}`;
+        return `${label}${Array(space > 0 ? space : 1).join('.')}${valueStr}`; // FIXED: Ganti spasi jadi titik
     };
 
     const menuMix = {};
@@ -1010,11 +1003,11 @@ function printClosing(){
         menuMix[item.name].total += item.price * item.qty;
     }));
     
-    const createReportLine = (name, data) => {
+    const createReportLine = (name, data) => { // Fungsi untuk Sales by Menu
         const totalRpStr = formatRp(data.total).padStart(12); 
         const namePart = `${name.substring(0, 30)} x${data.qty}`; 
         const space = MAX_WIDTH - namePart.length - totalRpStr.length;
-        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`;
+        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`; // FIXED: Ganti spasi jadi titik
     };
 
     const menuDetail = Object.keys(menuMix).map(name => createReportLine(name, menuMix[name])).join('\n');
@@ -1027,29 +1020,21 @@ function printClosing(){
     const totalTrxLine = padLine("Total Transaksi: ", `${trx.length} Nota`);
 
     w.document.write(`
-        <pre style='font-family:monospace; font-size: 14px; line-height: 1.2; width: 80mm; max-width: 80mm;'>
-        
-        === CLOSING REPORT HARIAN ===
+        <pre> === CLOSING REPORT HARIAN ===
         
         Outlet: JIF PIZZA CONDET
 ${kasirLine}
 ${dateLine}
         
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        RINGKASAN PENJUALAN
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} RINGKASAN PENJUALAN
 ${totalTrxLine}
 ${padLine("Subtotal Kotor: ", formatRp(totalSubtotal))}
 ${padLine("Diskon Total: ", formatRp(totalDiscount))}
 ${padLine("TOTAL PENJUALAN AKHIR: ", formatRp(totalSales))}
 
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        SALES BY MENU (PRODUCT MIX)
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} SALES BY MENU (PRODUCT MIX)
 ${menuDetail.trim()}
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        ${'================================================'.substring(0, MAX_WIDTH)}
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} ${'================================================'.substring(0, MAX_WIDTH)}
         TERIMA KASIH, LAPORAN SELESAI
         </pre>
     `);
@@ -1088,12 +1073,12 @@ function printReport() {
     const totalDiscount = filteredTrx.reduce((acc, t) => acc + (t.discountAmount || 0), 0);
     const totalSales = filteredTrx.reduce((acc, t) => acc + t.total, 0);
     
-    const MAX_WIDTH = 48;
+    const MAX_WIDTH = 42; // FIXED: MENGGUNAKAN 42
     const padLine = (label, value) => {
         const valStr = String(value);
         const labelLen = label.length;
         const space = MAX_WIDTH - labelLen - valStr.length;
-        return `${label}${Array(space > 0 ? space : 1).join('.')}${valueStr}`;
+        return `${label}${Array(space > 0 ? space : 1).join('.')}${valStr}`; // FIXED: Ganti spasi jadi titik
     };
 
     const w = window.open("", "_blank");
@@ -1112,21 +1097,15 @@ function printReport() {
 ${kasirLine}
 ${dateLine}
         
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        RINGKASAN PENJUALAN
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} RINGKASAN PENJUALAN
 ${totalTrxLine}
 ${padLine("Subtotal Kotor: ", formatRp(totalSubtotal))}
 ${padLine("Diskon Total: ", formatRp(totalDiscount))}
 ${padLine("TOTAL PENJUALAN AKHIR: ", formatRp(totalSales))}
 
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        RINCIAN TRANSAKSI (${filteredTrx.length} Nota)
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} RINCIAN TRANSAKSI (${filteredTrx.length} Nota)
 ${filteredTrx.map(t => padLine(`Nota #${t.id} (${t.orderType})`, formatRp(t.total))).join('\n')}
-        ${'------------------------------------------------'.substring(0, MAX_WIDTH)}
-        
-        ${'================================================'.substring(0, MAX_WIDTH)}
+        ${'________________________________________________'.substring(0, MAX_WIDTH)} ${'================================================'.substring(0, MAX_WIDTH)}
         LAPORAN SELESAI
         </pre>
     `);
