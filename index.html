@@ -590,7 +590,7 @@ function saveTransaction(subtotal, discountAmount, finalTotal, customerNote){
 // UPDATED: printStruk (Menampilkan Diskon)
 function printStruk(subtotal, discountAmount, finalTotal, bayar, kembali, note){
     const now = new Date().toLocaleString("id-ID");
-    const MAX_WIDTH = 48; 
+    const MAX_WIDTH = 42; 
 
     const createStrukLine = (name, qty, price) => {
         const totalStr = formatRp(price * qty).padStart(12);
@@ -992,7 +992,7 @@ function printClosing(){
     const totalDiscount = trx.reduce((acc, t) => acc + (t.discountAmount || 0), 0);
     const totalSales = trx.reduce((acc, t) => acc + t.total, 0);
 
-    const MAX_WIDTH = 48; 
+    const MAX_WIDTH = 42; 
 
     const padLine = (label, value) => {
         const valueStr = String(value);
