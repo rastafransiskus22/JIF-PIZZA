@@ -377,7 +377,6 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     </div>
   </div>
 </div>
-
 <div class="overlay" id="qrisModal">
   <div class="modal">
     <h3>Scan QRIS Anda</h3>
@@ -526,7 +525,6 @@ function renderAppStructure(){
     }
   }
 }
-
 function openOrderType(){$("orderTypeOverlay").style.display="flex";}
 
 // REVISI 3: setOrderType kini menyimpan platform spesifik
@@ -599,7 +597,6 @@ function renderMenus(filter = 'Semua'){
         }
     });
 }
-
 function addToCart(m, itemName, price){
     const f=cart.find(i=>i.name===itemName);
     if(f){
@@ -610,7 +607,7 @@ function addToCart(m, itemName, price){
             price: price, 
             qty: 1, 
             category: m.category,
-            baseMenuName: m.name,
+            baseMenuName: m.baseMenuName,
             discountPercent: 0,
             discountAmount: 0,
             finalPrice: price // Harga setelah diskon
@@ -625,6 +622,24 @@ function deleteFromCart(index) {
         renderOrders();
     }
 }
+
+/**
+ * START OF FIX: Tambahkan fungsi updateFooterTotals()
+ */
+function updateFooterTotals() {
+    let totalDiscount = cart.reduce((acc, c) => acc + c.discountAmount, 0);
+    let finalTotal = cart.reduce((acc, c) => acc + c.finalPrice, 0);
+    
+    $("discountDisplay").innerText = "Total Diskon: -"+formatRp(totalDiscount);
+    $("totalDisplay").innerText="TOTAL BAYAR: "+formatRp(finalTotal);
+    
+    currentFinalTotal = finalTotal; 
+}
+
+/**
+ * START OF FIX: Modifikasi updateItemDiscount()
+ * Hapus renderOrders() dan ganti dengan update lokal + updateFooterTotals()
+ */
 function updateItemDiscount(index, inputElement) {
     let percent = parseFloat(inputElement.value.replace(/[^0-9.]/g, '')) || 0; // Hapus karakter non-angka kecuali titik
     
@@ -634,27 +649,56 @@ function updateItemDiscount(index, inputElement) {
     inputElement.value = percent; 
     
     const item = cart[index];
-    item.discountPercent = percent;
-    
     const itemSubtotal = item.price * item.qty;
+
+    // 1. Perbarui data item
+    item.discountPercent = percent;
     item.discountAmount = itemSubtotal * (percent / 100);
     item.finalPrice = itemSubtotal - item.discountAmount;
     
-    renderOrders(); 
+    // 2. Perbarui hanya tampilan item secara lokal (di dalam baris pesanan)
+    // Cari div display total & diskon, yang merupakan elemen saudara terdekat (nextElementSibling)
+    const displayContainer = inputElement.nextElementSibling;
+    
+    if (displayContainer) {
+        // Asumsikan elemen final price adalah span dengan class final-price-display
+        const finalPriceElement = displayContainer.querySelector('.final-price-display');
+        // Asumsikan elemen diskon adalah small dengan class item-discount-display
+        const discDisplayElement = displayContainer.querySelector('.item-discount-display');
+        
+        if (finalPriceElement) {
+            finalPriceElement.innerText = formatRp(item.finalPrice);
+        }
+        if (discDisplayElement) {
+            // Kita hanya perlu update isi textnya
+            discDisplayElement.innerText = `Diskon: ${formatRp(item.discountAmount)}`;
+        }
+    }
+    
+    // 3. Panggil fungsi baru untuk update total di footer (TANPA merender ulang seluruh daftar)
+    updateFooterTotals();
+    
+    // HAPUS: renderOrders(); // **INI PENYEBAB KEYBOARD TERTUTUP**
 }
+/**
+ * END OF FIX: updateItemDiscount()
+ */
+/**
+ * START OF FIX: Modifikasi renderOrders()
+ * Hapus perhitungan dan pembaruan display total, ganti dengan panggilan updateFooterTotals()
+ * Tambahkan class untuk update lokal di updateItemDiscount()
+ */
 function renderOrders(){
     const root=$("orderList");
     root.innerHTML="";
     
     let subtotal=0;
-    let totalDiscount=0;
-    let finalTotal=0;
+    // Hapus totalDiscount dan finalTotal dari scope lokal
     
     if(cart.length===0){
         root.innerHTML="<p>Belum ada pesanan</p>";
-        $("totalDisplay").innerText="TOTAL BAYAR: Rp 0";
-        $("discountDisplay").innerText="Total Diskon: Rp 0";
-        currentFinalTotal = 0; 
+        // Panggil fungsi total yang baru
+        updateFooterTotals(); 
         return;
     }
     
@@ -665,13 +709,12 @@ function renderOrders(){
         c.discountAmount = itemSubtotal * (c.discountPercent / 100);
         c.finalPrice = itemSubtotal - c.discountAmount;
         
-        totalDiscount += c.discountAmount;
-        finalTotal += c.finalPrice;
+        // Hapus penambahan ke totalDiscount dan finalTotal di sini
         
         const d=document.createElement("div");
         d.className="order-item-detail"; 
         d.innerHTML=`
-            <div>
+            <div style="flex-grow: 1;">
                 ${c.name} x${c.qty}
                 <br>
                 <small>Harga @${formatRp(c.price)}</small>
@@ -688,9 +731,9 @@ function renderOrders(){
                 style="width: 50px;"
             >
             <div style="font-weight: bold; text-align: right;">
-                ${formatRp(c.finalPrice)}
+                <span class="final-price-display">${formatRp(c.finalPrice)}</span>
                 <br>
-                <small style="color: #c62828;">Diskon: ${formatRp(c.discountAmount)}</small>
+                <small class="item-discount-display" style="color: #c62828;">Diskon: ${formatRp(c.discountAmount)}</small>
             </div>
             <button class='btn danger delete-btn' onclick='deleteFromCart(${index})'>Hapus</button>
         `;
@@ -701,11 +744,12 @@ function renderOrders(){
     subtotalRef.innerHTML = `<h4 style="margin: 5px 0; color: #666;">Subtotal Kotor: ${formatRp(subtotal)}</h4>`;
     root.appendChild(subtotalRef);
     
-    $("discountDisplay").innerText = "Total Diskon: -"+formatRp(totalDiscount);
-    $("totalDisplay").innerText="TOTAL BAYAR: "+formatRp(finalTotal);
-    
-    currentFinalTotal = finalTotal; 
+    // Panggil fungsi total yang baru
+    updateFooterTotals(); 
 }
+/**
+ * END OF FIX: renderOrders()
+ */
 function openPaymentModal() {
     if (cart.length === 0) return alert("Keranjang masih kosong.");
     
@@ -804,6 +848,7 @@ function completePayment(method, paidAmount = null) {
     $("customerNote").value = ""; 
     openOrderType();
 }
+
 function saveTransaction(subtotal, totalDiscount, finalTotal, customerNote, paymentMethod){
     store.transactions.push({
         id:Date.now(),
@@ -873,7 +918,10 @@ function printStruk(subtotal, totalDiscount, finalTotal, bayar, kembali, note, p
 }
 // PERMINTAAN 8: Fungsi Cetak Ulang Struk
 function reprintTransaction(transaction) {
-    if (!confirm(`Cetak ulang Transaksi ID: ${transaction.id}?`)) return;
+    if (!currentUser || currentUser.role !== 'Manager') {
+        alert("Akses ditolak. Hanya Manajer yang dapat menghapus transaksi.");
+        return;
+    }
 
     // Set cart sementara untuk printing
     const tempCart = transaction.items.map(item => ({
@@ -906,8 +954,6 @@ function reprintTransaction(transaction) {
     cart = originalCart;
     alert("Cetak ulang selesai!");
 }
-
-
 // ======================================================================
 // FUNGSI MANAJEMEN MENU & DISKON
 // ======================================================================
@@ -952,6 +998,7 @@ function addMenu(){
     renderMenus();
     renderMenuEditor();
 }
+
 function renderMenuEditor(){
     const root=$("menuEditor");
     root.innerHTML="";
@@ -998,7 +1045,6 @@ function deleteTransaction(id) {
   // ======================================================================
 // FUNGSI LAPORAN, GRAFIK, DAN CETAK
 // ======================================================================
-
 function getFilteredTransactions(filterType = null, dateInputTrigger = false) {
     const transactions = store.transactions;
     const now = new Date();
@@ -1253,7 +1299,6 @@ function renderSummary(filteredTrx, filter) {
     // Update periode di H3
     const reportTitle = document.querySelector('#laporanPage h3').innerText = `Laporan Penjualan (${filter})`;
 }
-
 function renderSalesByMenu(filteredTrx) {
     const root = $("salesByMenu");
     let menuMix = {};
@@ -1436,7 +1481,6 @@ TERIMA KASIH, LAPORAN SELESAI
     
     w.print();
 }
-
 // PERMINTAAN 5: Revisi fungsi printReport untuk 58mm (MAX_WIDTH 30)
 function printReport() {
     const dateInputTrigger = $("reportDate").value ? true : false;
