@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>JIF PIZZA POS v10.0 — Final</title>
+<title>JIF PIZZA POS v10.1 — Revisi</title>
 <link rel="icon" href="logo.png"/>
 
 <meta name="mobile-web-app-capable" content="yes">
@@ -12,9 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="JIF POS">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" sizes="192x192" href="logo.png">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> 
-
 <style>
 /* CSS */
 body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:#fff;color:#222}
@@ -48,7 +46,6 @@ header h1, header p {
 }
 header h1{margin:0;font-size:22px}
 header p{margin:4px 0 0 0;font-size:14px}
-
 /* Gaya Tombol 3D */
 .navbar button, .btn {
     padding: 10px 16px; 
@@ -62,7 +59,13 @@ header p{margin:4px 0 0 0;font-size:14px}
     box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08); 
     background: linear-gradient(145deg, #f0f0f0, #e0e0e0); 
     color: #333;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.7); 
+    /* REVISI 2: Menghapus text-shadow agar tidak berbayang */
+    
+    /* REVISI 2: Teks Tombol Tengah */
+    display: flex;
+    align-items: center; /* Pusat Vertikal */
+    justify-content: center; /* Pusat Horizontal */
+    text-align: center; /* Cadangan */
 }
 .navbar button:hover, .btn:hover {
     transform: translateY(-1px); 
@@ -76,22 +79,21 @@ header p{margin:4px 0 0 0;font-size:14px}
 .btn.primary, .navbar button.primary-nav { 
     background: linear-gradient(145deg, #e57373, #d32f2f);
     color: #fff;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    /* REVISI 2: Menghapus text-shadow agar tidak berbayang */
     box-shadow: 0 4px 6px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
 }
 .btn.secondary, .navbar button.secondary-nav { 
     background: linear-gradient(145deg, #64b5f6, #1976d2);
     color: #fff;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    /* REVISI 2: Menghapus text-shadow agar tidak berbayang */
     box-shadow: 0 4px 6px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
 }
 .btn.danger, .navbar button.danger-nav { 
     background: linear-gradient(145deg, #ef5350, #c62828);
     color: #fff;
-    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    /* REVISI 2: Menghapus text-shadow agar tidak berbayang */
     box-shadow: 0 4px 6px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
 }
-
 /* GAYA TAB AKTIF (Merah) */
 .navbar button.active-tab {
     background: linear-gradient(145deg, #d32f2f, #e57373);
@@ -99,8 +101,6 @@ header p{margin:4px 0 0 0;font-size:14px}
     box-shadow: 0 0 5px rgba(217, 73, 73, 0.7); 
     transform: none; 
 }
-
-
 .navbar{background:#fff;display:flex;justify-content:center;gap:8px;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .container{padding:14px}
 #loginPage {
@@ -129,12 +129,21 @@ header p{margin:4px 0 0 0;font-size:14px}
     align-items: center;
     padding: 5px 0;
     border-bottom: 1px dashed #eee;
+    flex-wrap: wrap; 
 }
 .order-item-detail .delete-btn {
     padding: 3px 6px;
     font-size: 0.7em;
     margin-left: 10px;
     box-shadow: none;
+}
+/* Gaya untuk input diskon per item */
+.item-discount-input {
+    width: 60px; /* Ukuran kecil */
+    padding: 3px;
+    font-size: 0.9em;
+    text-align: right;
+    margin: 0 5px;
 }
 .order-box{margin-top:12px;padding:10px;border-top:2px solid #ccc}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
@@ -145,21 +154,20 @@ header p{margin:4px 0 0 0;font-size:14px}
   text-align:center;
   max-width:320px;
   width:90%;
-  display: flex; /* Tambah: Untuk mengatur tombol di modal */
-  flex-direction: column; /* Tambah: Agar tombol berderet ke bawah */
-  gap: 10px; /* Tambah: Jarak antar elemen di modal */
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
 } 
 /* Tambahan untuk tata letak tombol payment di modal */
 .modal .payment-method-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 2 kolom */
-    gap: 8px; /* Jarak antar tombol payment */
+    gap: 8px; 
 }
 input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;margin:4px 0}
 .report-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 .report-table th, .report-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
 .report-table th { background-color: #f2f2f2; }
-
 #homePage img {
     max-width: 100%;
     height: auto;
@@ -168,6 +176,59 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     display: block;
     margin: 0 auto 20px auto; 
 }
+
+/* NEW: Gaya Kotak Ringkasan Laporan */
+.report-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+.summary-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-left: 5px solid; /* Akan diubah sesuai tipe */
+    text-align: left;
+}
+.summary-card h4 {
+    margin: 0 0 5px 0;
+    font-size: 0.8em;
+    color: #666;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+.summary-card .value {
+    font-size: 1.2em;
+    font-weight: 700;
+}
+/* Warna spesifik untuk border card */
+.card-sales { border-left-color: #2e7d32; } 
+.card-count { border-left-color: #1976d2; } 
+.card-subtotal { border-left-color: #fbc02d; } 
+.card-discount { border-left-color: #d32f2f; } 
+
+/* Gaya untuk detail outlet/metode bayar di laporan */
+.detail-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 5px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+}
+.detail-list li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #ddd;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+}
+.detail-list li:last-child {
+    border-bottom: none;
+}
+
 
 /* Print style untuk 80mm */
 @media print {
@@ -210,7 +271,6 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     (Akun Manajer sudah terdaftar)
   </p>
 </div>
-
 <div id="homePage" class="container hidden">
   <img src="pizza.jpg" alt="JIF Pizza" /> <h2 style="color: #d94949;">Selamat Datang di Jif Pizza!</h2>
   <p style="line-height: 1.6;">
@@ -237,10 +297,7 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     <h3>Pesanan</h3>
     <div id="orderList"></div>
     <div style="border-top: 1px solid #ccc; padding: 5px 0; margin-top: 10px;">
-        <select id="discountSelector" onchange="applyDiscount()" style="width: calc(100% - 20px); margin-bottom: 5px;">
-            <option value="">-- Pilih Diskon (Tidak Ada) --</option>
-        </select>
-        <div id="discountDisplay" style="font-weight: bold; color: #c62828;">Diskon: Rp 0</div>
+        <div id="discountDisplay" style="font-weight: bold; color: #c62828;">Total Diskon: Rp 0</div>
     </div>
     <h3 id="totalDisplay" style="color: #2e7d32; margin-top: 10px;">TOTAL BAYAR: Rp 0</h3> 
     <button class="btn primary" onclick="openPaymentModal()">Bayar & Cetak</button>
@@ -259,26 +316,16 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
   </select>
   
   <input id="mPriceOffline" type="number" placeholder="Harga Jual OFFLINE (Rp)"/>
-  <input id="mOnlineMarkup" type="number" placeholder="Markup Harga ONLINE (Rp)"/>
+  <input id="mGojekMarkup" type="number" placeholder="Markup Harga GOJEK/GOPAY (Rp)"/>
+  <input id="mGrabMarkup" type="number" placeholder="Markup Harga GRAB/OVO (Rp)"/>
+  <input id="mShopeeMarkup" type="number" placeholder="Markup Harga SHOPEEPAY (Rp)"/>
   
   <button class="btn primary" onclick="addMenu()">Tambah</button>
   <div id="menuEditor"></div>
 
   <h3 style="margin-top: 30px;">Kelola Diskon (Manajer Only)</h3>
-  <input id="dName" placeholder="Nama Diskon (misal: Diskon Merdeka)"/>
-  
-  <select id="dType">
-    <option value="">-- Tipe Diskon --</option>
-    <option value="percentage">Persen (%)</option>
-    <option value="amount">Nominal (Rp)</option>
-  </select>
-  
-  <input id="dValue" type="number" placeholder="Nilai Diskon (misal: 10 atau 5000)"/>
-  
-  <button class="btn secondary" onclick="addDiscount()">Tambah Diskon</button>
-  <div id="discountEditor" class="menu-editor" style="margin-top: 15px;"></div>
+  <p style="color: #666;">Fitur diskon global dinonaktifkan. Sekarang diskon diterapkan per item.</p>
 </div>
-
 <div id="laporanPage" class="container hidden">
   <h3>Laporan Penjualan</h3>
   
@@ -299,8 +346,12 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     <canvas id="salesChart"></canvas> 
   </div>
   
-  <p style="font-weight: bold; margin-top: 20px;">Ringkasan:</p>
-  <div id="laporanSummary"></div> 
+  <p style="font-weight: bold; margin-top: 20px;">Ringkasan Penjualan:</p>
+  <div id="laporanSummary" class="report-summary-grid">
+    </div> 
+  <h4 style="margin-top: 20px;">Detail Outlet & Pembayaran</h4>
+  <div id="laporanDetailSummary">
+    </div>
   
   <h4 style="margin-top: 20px;">Sales by Menu (Product Mix)</h4>
   <div id="salesByMenu"></div>
@@ -311,8 +362,11 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
 <div class="overlay" id="orderTypeOverlay">
   <div class="modal">
     <h3>Pilih Tipe Order</h3>
-    <button class="btn primary" onclick="setOrderType('Online')">Order Online</button>
-    <button class="btn secondary" onclick="setOrderType('Offline')">Order Offline</button>
+    <button class="btn primary" onclick="setOrderType('Offline')">Order Offline (Tunai/QRIS)</button>
+    <h4 style="margin: 10px 0;">Order Online (Pilih Platform)</h4>
+    <button class="btn secondary" onclick="setOrderType('Gojek')">Gojek/Gopay</button>
+    <button class="btn secondary" onclick="setOrderType('Grab')">Grab/OVO</button>
+    <button class="btn secondary" onclick="setOrderType('Shopee')">ShopeePay</button>
   </div>
 </div>
 
@@ -322,13 +376,13 @@ input, select{padding:8px;border:1px solid #ccc;border-radius:6px;width:100%;mar
     <input type="number" id="manualBayar" placeholder="Nominal Bayar Tunai"/>
     <button class="btn primary" onclick="processManualPayment()">Bayar Tunai & Cetak Struk</button>
     
-    <h4 style="margin: 10px 0;">Atau Pilih Metode Lain:</h4>
+    <h4 style="margin: 10px 0;">Pilih Metode Bayar:</h4>
     <div class="payment-method-grid"> 
         <button class="btn secondary" id="pay-cash-pas" onclick="completePayment('Cash', currentFinalTotal)">Bayar Pas (Tunai)</button>
         <button class="btn secondary" id="pay-qris" onclick="openQrisModal()">QRIS (Scan Barcode)</button>
-        <button class="btn secondary" id="pay-gojek" onclick="completePayment('Gojek')">Gojek/Gopay</button>
-        <button class="btn secondary" id="pay-grab" onclick="completePayment('Grab')">Grab/OVO</button>
-        <button class="btn secondary" id="pay-shopee" onclick="completePayment('Shopee')">ShopeePay</button>
+        <button class="btn secondary" id="pay-gojek" onclick="completePayment('Gojek')">Bayar Gojek/Gopay</button>
+        <button class="btn secondary" id="pay-grab" onclick="completePayment('Grab')">Bayar Grab/OVO</button>
+        <button class="btn secondary" id="pay-shopee" onclick="completePayment('Shopee')">Bayar ShopeePay</button>
     </div>
   </div>
 </div>
@@ -361,15 +415,14 @@ if ('serviceWorker' in navigator) {
 // FUNGSI INTI & UTILITY
 // ======================================================================
 
-const STORE_KEY="jif_pos_v10_0"; 
-let store=JSON.parse(localStorage.getItem(STORE_KEY)||'{"users":[{"email":"manager@jif.com","password":"123","role":"Manager"}],"menus":[],"transactions":[],"discounts":[]}'); 
+const STORE_KEY="jif_pos_v10_1"; 
+let store=JSON.parse(localStorage.getItem(STORE_KEY)||'{"users":[{"email":"manager@jif.com","password":"123","role":"Manager"}],"menus":[],"transactions":[]}'); 
 let currentUser=JSON.parse(localStorage.getItem('currentUser')) || null; 
 
-let orderType=null;
+let orderType=null; // Sekarang bisa 'Offline', 'Gojek', 'Grab', 'Shopee'
 let cart=[];
-let appliedDiscount = null; 
-let currentFinalTotal = 0; // Menyimpan total akhir yang akan dibayar
-let salesChartInstance = null; // Instance Chart.js
+let currentFinalTotal = 0; 
+let salesChartInstance = null; 
 
 function saveStore(){localStorage.setItem(STORE_KEY,JSON.stringify(store));}
 function formatRp(n){return "Rp "+(n||0).toLocaleString("id-ID");}
@@ -386,11 +439,18 @@ function getWeekNumber(d) {
     return d.getUTCFullYear() + '-' + weekNo;
 }
 
+// REVISI 3: Fungsi menghitung harga berdasarkan platform/orderType
 function calculatePrice(menu) {
-    if (orderType === 'Online') {
-        return menu.priceOffline + menu.markupOnline;
+    const base = menu.priceOffline || 0;
+    
+    if (orderType === 'Gojek') {
+        return base + (menu.markupGojek || 0);
+    } else if (orderType === 'Grab') {
+        return base + (menu.markupGrab || 0);
+    } else if (orderType === 'Shopee') {
+        return base + (menu.markupShopee || 0);
     }
-    return menu.priceOffline;
+    return base; // Default: Offline
 }
 // ======================================================================
 // FUNGSI LOGIN / LOGOUT
@@ -475,6 +535,7 @@ function renderAppStructure(){
 
 function openOrderType(){$("orderTypeOverlay").style.display="flex";}
 
+// REVISI 3: setOrderType kini menyimpan platform spesifik
 function setOrderType(type){
     orderType=type;
     $("orderTypeOverlay").style.display="none";
@@ -484,7 +545,6 @@ function setOrderType(type){
 
 function showKasir(){
   openOrderType();
-  renderDiscountSelector(); 
   renderMenus();
   renderOrders();
 }
@@ -503,7 +563,6 @@ function activateTab(tab){
     if(currentUser && currentUser.role === 'Manager'){
       $("menuPage").classList.remove("hidden");
       renderMenuEditor();
-      renderDiscountEditor(); 
     } else {
       alert("Akses ditolak. Fitur Tambah Menu hanya untuk Manajer.");
       activateTab('home'); 
@@ -526,7 +585,8 @@ function renderMenus(filter = 'Semua'){
     
     let filteredMenus = store.menus.filter(m => filter === 'Semua' || m.category === filter);
     
-    const priceType = orderType === 'Online' ? 'Online' : 'Offline';
+    // REVISI 3: priceType diambil dari orderType global
+    const priceType = orderType === 'Offline' ? 'Offline' : `Online (${orderType})`;
     
     filteredMenus.forEach(m=>{
         const price = calculatePrice(m);
@@ -548,14 +608,20 @@ function renderMenus(filter = 'Semua'){
 
 function addToCart(m, itemName, price){
     const f=cart.find(i=>i.name===itemName);
-    if(f)f.qty++;
-    else cart.push({
-        name: itemName, 
-        price: price, 
-        qty: 1, 
-        category: m.category,
-        baseMenuName: m.name 
-    }); 
+    if(f){
+        f.qty++;
+    } else {
+        cart.push({
+            name: itemName, 
+            price: price, 
+            qty: 1, 
+            category: m.category,
+            baseMenuName: m.name,
+            discountPercent: 0,
+            discountAmount: 0,
+            finalPrice: price // Harga setelah diskon
+        }); 
+    }
     renderOrders();
 }
 
@@ -565,83 +631,119 @@ function deleteFromCart(index) {
         renderOrders();
     }
 }
-
+function updateItemDiscount(index, inputElement) {
+    let percent = parseFloat(inputElement.value) || 0;
+    
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
+    
+    inputElement.value = percent; 
+    
+    const item = cart[index];
+    item.discountPercent = percent;
+    
+    const itemSubtotal = item.price * item.qty;
+    item.discountAmount = itemSubtotal * (percent / 100);
+    item.finalPrice = itemSubtotal - item.discountAmount;
+    
+    renderOrders(); 
+}
 function renderOrders(){
     const root=$("orderList");
     root.innerHTML="";
     
     let subtotal=0;
+    let totalDiscount=0;
+    let finalTotal=0;
     
     if(cart.length===0){
         root.innerHTML="<p>Belum ada pesanan</p>";
         $("totalDisplay").innerText="TOTAL BAYAR: Rp 0";
-        $("discountDisplay").innerText="Diskon: Rp 0";
-        appliedDiscount = null; 
-        $("discountSelector").value = ""; 
+        $("discountDisplay").innerText="Total Diskon: Rp 0";
         currentFinalTotal = 0; 
         return;
     }
     
     cart.forEach((c, index)=>{
-        subtotal+=c.price*c.qty;
+        const itemSubtotal = c.price * c.qty;
+        subtotal += itemSubtotal;
+        
+        c.discountAmount = itemSubtotal * (c.discountPercent / 100);
+        c.finalPrice = itemSubtotal - c.discountAmount;
+        
+        totalDiscount += c.discountAmount;
+        finalTotal += c.finalPrice;
+        
         const d=document.createElement("div");
         d.className="order-item-detail"; 
         d.innerHTML=`
             <div>
                 ${c.name} x${c.qty}
                 <br>
-                <small>${formatRp(c.price*c.qty)}</small>
+                <small>Harga @${formatRp(c.price)}</small>
+            </div>
+            <input 
+                type="number" 
+                class="item-discount-input" 
+                placeholder="%" 
+                value="${c.discountPercent}" 
+                min="0" 
+                max="100"
+                oninput="updateItemDiscount(${index}, this)"
+                style="width: 50px;"
+            >
+            <div style="font-weight: bold; text-align: right;">
+                ${formatRp(c.finalPrice)}
+                <br>
+                <small style="color: #c62828;">Diskon: ${formatRp(c.discountAmount)}</small>
             </div>
             <button class='btn danger delete-btn' onclick='deleteFromCart(${index})'>Hapus</button>
         `;
         root.appendChild(d);
     });
 
-    let discountAmount = 0;
-    let finalTotal = subtotal;
-    let discountDisplay = 'Diskon: Rp 0';
-
-    if (appliedDiscount) {
-        if (appliedDiscount.type === 'percentage') {
-            discountAmount = subtotal * (appliedDiscount.value / 100);
-            discountDisplay = `Diskon (${appliedDiscount.name}): -${formatRp(discountAmount)}`;
-        } else if (appliedDiscount.type === 'amount') {
-            discountAmount = appliedDiscount.value;
-            discountDisplay = `Diskon (${appliedDiscount.name}): -${formatRp(appliedDiscount.value)}`;
-        }
-        
-        finalTotal = subtotal - discountAmount;
-        if (finalTotal < 0) finalTotal = 0; 
-    }
-    
     const subtotalRef = document.createElement("div");
-    subtotalRef.innerHTML = `<h4 style="margin: 5px 0; color: #666;">Subtotal: ${formatRp(subtotal)}</h4>`;
+    subtotalRef.innerHTML = `<h4 style="margin: 5px 0; color: #666;">Subtotal Kotor: ${formatRp(subtotal)}</h4>`;
     root.appendChild(subtotalRef);
     
-    $("discountDisplay").innerText = discountDisplay;
+    $("discountDisplay").innerText = "Total Diskon: -"+formatRp(totalDiscount);
     $("totalDisplay").innerText="TOTAL BAYAR: "+formatRp(finalTotal);
     
     currentFinalTotal = finalTotal; 
 }
-
 function openPaymentModal() {
     if (cart.length === 0) return alert("Keranjang masih kosong.");
     
     $("manualBayar").value = '';
-    
     $("modalTotal").innerText = `Total Akhir: ${formatRp(currentFinalTotal)}`;
     
-    // Logika menyembunyikan tombol berdasarkan orderType
-    const isOnline = orderType === 'Online';
+    const isOffline = orderType === 'Offline';
     
-    // Sembunyikan/Tampilkan metode payment
-    $("pay-cash-pas").style.display = isOnline ? 'none' : 'block'; 
-    $("pay-qris").style.display = isOnline ? 'none' : 'block'; 
+    // Tampilkan/Sembunyikan elemen cash payment
+    const manualPayButton = document.querySelector('#paymentModal .modal > button.primary');
+    manualPayButton.style.display = isOffline ? 'block' : 'none';
+    $("manualBayar").style.display = isOffline ? 'block' : 'none';
     
-    $("pay-gojek").style.display = isOnline ? 'block' : 'none'; 
-    $("pay-grab").style.display = isOnline ? 'block' : 'none'; 
-    $("pay-shopee").style.display = isOnline ? 'block' : 'none'; 
+    // Sembunyikan semua tombol payment
+    $("pay-cash-pas").style.display = 'none'; 
+    $("pay-qris").style.display = 'none'; 
+    $("pay-gojek").style.display = 'none'; 
+    $("pay-grab").style.display = 'none'; 
+    $("pay-shopee").style.display = 'none'; 
     
+    // Tampilkan tombol yang relevan
+    if (isOffline) {
+        $("pay-cash-pas").style.display = 'block'; 
+        $("pay-cash-pas").innerText = 'Bayar Pas (Tunai)';
+        $("pay-qris").style.display = 'block'; 
+    } else if (orderType === 'Gojek') {
+        $("pay-gojek").style.display = 'block';
+    } else if (orderType === 'Grab') {
+        $("pay-grab").style.display = 'block';
+    } else if (orderType === 'Shopee') {
+        $("pay-shopee").style.display = 'block';
+    }
+
     $("paymentModal").style.display = "flex";
 }
 
@@ -660,18 +762,9 @@ function processManualPayment() {
     
     completePayment('Cash', bayar); 
 }
-
 function completePayment(method, paidAmount = null) {
-    let subtotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
-    
-    let discountAmount = 0;
-    if (appliedDiscount) {
-        if (appliedDiscount.type === 'percentage') {
-            discountAmount = subtotal * (appliedDiscount.value / 100);
-        } else if (appliedDiscount.type === 'amount') {
-            discountAmount = appliedDiscount.value;
-        }
-    }
+    const subtotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
+    const totalDiscount = cart.reduce((a,b)=>a+b.discountAmount,0); 
     const finalTotal = currentFinalTotal; 
     
     let bayar = paidAmount;
@@ -703,49 +796,60 @@ function completePayment(method, paidAmount = null) {
         alert("Pembayaran Tunai Pas sukses!");
     }
     
-    const customerNote = $("customerNote").value.trim() || "Tunai"; 
+    const customerNote = $("customerNote").value.trim() || orderType; 
     
-    saveTransaction(subtotal, discountAmount, finalTotal, customerNote, method); 
-    printStruk(subtotal, discountAmount, finalTotal, bayar, change, customerNote, method); 
+    saveTransaction(subtotal, totalDiscount, finalTotal, customerNote, method); 
+    printStruk(subtotal, totalDiscount, finalTotal, bayar, change, customerNote, method); 
     
-    appliedDiscount = null; 
-    $("discountSelector").value = ""; 
     cart=[];
     renderOrders();
     $("customerNote").value = ""; 
     openOrderType();
 }
-function saveTransaction(subtotal, discountAmount, finalTotal, customerNote, paymentMethod){
+function saveTransaction(subtotal, totalDiscount, finalTotal, customerNote, paymentMethod){
     store.transactions.push({
         id:Date.now(),
         user:currentUser.email,
         orderType,
         paymentMethod, 
-        items:[...cart],
+        items: cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+            category: item.category,
+            baseMenuName: item.baseMenuName,
+            discountPercent: item.discountPercent, 
+            discountAmount: item.discountAmount,
+            finalPrice: item.finalPrice 
+        })),
         subtotal: subtotal, 
-        discount: appliedDiscount, 
-        discountAmount: discountAmount, 
+        discount: null, 
+        discountAmount: totalDiscount, 
         total: finalTotal, 
         date:new Date().toISOString(),
         note: customerNote 
     });
     saveStore();
 }
-function printStruk(subtotal, discountAmount, finalTotal, bayar, kembali, note, paymentMethod){
+function printStruk(subtotal, totalDiscount, finalTotal, bayar, kembali, note, paymentMethod){
     const now = new Date().toLocaleString("id-ID");
     const MAX_WIDTH = 42; 
 
-    const createStrukLine = (name, qty, price) => {
-        const totalStr = formatRp(price * qty).padStart(12);
+    const createStrukLine = (name, qty, price, discountAmount, finalPrice) => {
+        const totalStr = formatRp(finalPrice).padStart(12);
         const namePart = `${name.substring(0, MAX_WIDTH - 15)} x${qty}`;
         const space = MAX_WIDTH - namePart.length - totalStr.length;
-        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalStr}`; 
+        
+        let line = `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalStr}`; 
+        
+        if (discountAmount > 0) {
+            const discountStr = `  Diskon: -${formatRp(discountAmount).padStart(12)}`;
+            line += `\n${discountStr.padStart(MAX_WIDTH)}`;
+        }
+        return line;
     };
     
     const noteLine = `Pelanggan: ${note.substring(0, MAX_WIDTH - 11)}`; 
-
-    const discountText = appliedDiscount ? 
-        `Diskon (${appliedDiscount.name.substring(0, 15)}): -${formatRp(discountAmount).padStart(12)}` : '';
     
     const w=window.open("","_blank");
     w.document.write(`
@@ -754,11 +858,11 @@ function printStruk(subtotal, discountAmount, finalTotal, bayar, kembali, note, 
 Kasir: ${currentUser.email}
 Tanggal: ${now}
 ${'__________________________________________'.substring(0, MAX_WIDTH)}
-${cart.map(i => createStrukLine(i.name, i.qty, i.price)).join('\n')}
+${cart.map(i => createStrukLine(i.name, i.qty, i.price, i.discountAmount, i.finalPrice)).join('\n')}
 ${'__________________________________________'.substring(0, MAX_WIDTH)}
 Subtotal:     ${formatRp(subtotal).padStart(12)}
-${discountText ? discountText + '\n' : ''}${`Total Akhir:  ${formatRp(finalTotal).padStart(12)}`}
-${(paymentMethod === 'Cash' || paidAmount > finalTotal) ? `Bayar:        ${formatRp(bayar).padStart(12)}\nKembali:      ${formatRp(kembali).padStart(12)}` : ''}
+${totalDiscount > 0 ? `Total Diskon: -${formatRp(totalDiscount).padStart(12)}\n` : ''}${`Total Akhir:  ${formatRp(finalTotal).padStart(12)}`}
+${(paymentMethod === 'Cash' && kembali >= 0) ? `Bayar:        ${formatRp(bayar).padStart(12)}\nKembali:      ${formatRp(kembali).padStart(12)}` : ''}
 Metode Bayar: ${paymentMethod}
 Order: ${orderType}
 ${noteLine}
@@ -766,9 +870,9 @@ ${'__________________________________________'.substring(0, MAX_WIDTH)}
 Terima kasih!
         </pre>
     `);
+    
     w.print();
 }
-
 // ======================================================================
 // FUNGSI MANAJEMEN MENU & DISKON
 // ======================================================================
@@ -776,7 +880,10 @@ function addMenu(){
     const name=$("mName").value.trim();
     const category=$("mCategory").value;
     const priceOffline=Number($("mPriceOffline").value);
-    const markupOnline=Number($("mOnlineMarkup").value);
+    // REVISI 3: Ambil markup spesifik
+    const markupGojek=Number($("mGojekMarkup").value);
+    const markupGrab=Number($("mGrabMarkup").value);
+    const markupShopee=Number($("mShopeeMarkup").value);
 
     if(!name || !category || !priceOffline) return alert("Isi Nama Menu, Kategori, dan Harga Offline.");
     
@@ -789,7 +896,10 @@ function addMenu(){
         category: category,
         uniqueName: uniqueItemName,
         priceOffline: priceOffline,
-        markupOnline: markupOnline,
+        // REVISI 3: Simpan markup spesifik
+        markupGojek: markupGojek,
+        markupGrab: markupGrab,
+        markupShopee: markupShopee,
         isExtra: category === 'Extra' 
     };
 
@@ -799,7 +909,10 @@ function addMenu(){
     $("mName").value=""; 
     $("mCategory").value="";
     $("mPriceOffline").value=""; 
-    $("mOnlineMarkup").value=""; 
+    // REVISI 3: Reset input baru
+    $("mGojekMarkup").value=""; 
+    $("mGrabMarkup").value=""; 
+    $("mShopeeMarkup").value=""; 
 
     renderMenus();
     renderMenuEditor();
@@ -811,17 +924,22 @@ function renderMenuEditor(){
     
     store.menus.forEach((m,i)=>{
         const priceOffline = formatRp(m.priceOffline);
-        const priceOnline = formatRp(m.priceOffline + m.markupOnline);
-        const markup = formatRp(m.markupOnline);
+        // REVISI 3: Tampilkan harga online spesifik
+        const priceGojek = formatRp(m.priceOffline + (m.markupGojek || 0));
+        const priceGrab = formatRp(m.priceOffline + (m.markupGrab || 0));
+        const priceShopee = formatRp(m.priceOffline + (m.markupShopee || 0));
 
-        const priceDetail = `OFFLINE: ${priceOffline} | ONLINE: ${priceOnline} (+${markup})`;
+        const priceDetail = `
+            OFFLINE: ${priceOffline} <br>
+            Gojek: ${priceGojek} | Grab: ${priceGrab} | Shopee: ${priceShopee}
+        `;
 
         const div=document.createElement("div");
         div.className="menu-item";
         div.innerHTML=`
             <div>
                 <strong>${m.name} (${m.category})</strong><br>
-                <small>${priceDetail}</small>
+                <small style="line-height: 1.4; display: block;">${priceDetail}</small>
             </div>
             <button class='btn danger' onclick='delMenu(${i})'>Hapus</button>
         `;
@@ -829,98 +947,6 @@ function renderMenuEditor(){
     });
 }
 function delMenu(i){store.menus.splice(i,1);saveStore();renderMenus();renderMenuEditor();}
-
-function addDiscount(){
-    if(!currentUser || currentUser.role!=='Manager') return alert("Akses ditolak. Hanya Manajer yang dapat mengelola diskon.");
-    
-    const name=$("dName").value.trim();
-    const type=$("dType").value;
-    const value=Number($("dValue").value);
-
-    if(!name || !type || !value) return alert("Isi Nama Diskon, Tipe, dan Nilai.");
-    
-    if(store.discounts.find(d => d.name === name)) return alert("Nama diskon sudah ada.");
-    
-    store.discounts.push({ 
-        name, 
-        type,
-        value: value
-    });
-
-    saveStore();
-    
-    $("dName").value=""; 
-    $("dType").value="";
-    $("dValue").value=""; 
-
-    renderDiscountEditor();
-    renderDiscountSelector(); 
-}
-
-function renderDiscountEditor(){
-    const root=$("discountEditor");
-    root.innerHTML="";
-    
-    if(store.discounts.length === 0) {
-        root.innerHTML = "<p>Belum ada diskon terdaftar.</p>";
-        return;
-    }
-
-    store.discounts.forEach((d,i)=>{
-        const displayType = d.type === 'percentage' ? 'Persen' : 'Nominal';
-        const displayValue = d.type === 'percentage' ? `${d.value}%` : formatRp(d.value);
-        
-        const div=document.createElement("div");
-        div.className="menu-item";
-        div.innerHTML=`
-            <div>
-                <strong>${d.name}</strong><br>
-                <small>Tipe: ${displayType} | Nilai: ${displayValue}</small>
-            </div>
-            <button class='btn danger' onclick='delDiscount(${i})'>Hapus</button>
-        `;
-        root.appendChild(div);
-    });
-}
-function delDiscount(i){
-    if (appliedDiscount && appliedDiscount.name === store.discounts[i]?.name) {
-        appliedDiscount = null;
-    }
-    store.discounts.splice(i,1);
-    saveStore();
-    renderDiscountEditor();
-    renderOrders(); 
-    renderDiscountSelector();
-}
-
-function renderDiscountSelector() {
-    const selector = $("discountSelector");
-    if (!selector) return; 
-
-    selector.innerHTML = '<option value="">-- Pilih Diskon (Tidak Ada) --</option>';
-    
-    store.discounts.forEach((d, index) => {
-        const display = d.type === 'percentage' ? `${d.value}%` : formatRp(d.value);
-        selector.innerHTML += `<option value="${index}">${d.name} (${display})</option>`;
-    });
-
-    if (appliedDiscount) {
-        const index = store.discounts.findIndex(d => d.name === appliedDiscount.name);
-        if (index !== -1) selector.value = index;
-    }
-}
-
-function applyDiscount() {
-    const selector = $("discountSelector");
-    const index = selector.value;
-    
-    if (index === "") {
-        appliedDiscount = null;
-    } else {
-        appliedDiscount = store.discounts[parseInt(index)];
-    }
-    renderOrders();
-}
 
 function deleteTransaction(id) {
     if (!currentUser || currentUser.role !== 'Manager') {
@@ -955,11 +981,9 @@ function getFilteredTransactions(filterType = null, dateInputTrigger = false) {
         const selectedDate = new Date(dateValue);
         
         if (filterType === 'month' || (selectedDate.getDate() === 1 && new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate() === selectedDate.getDate())) {
-            // Jika tanggal yang dipilih adalah tanggal 1 (asumsi awal bulan) atau filter bulan
             startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getTime();
             endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getTime();
         } else {
-            // Filter harian (default ketika tanggal spesifik dipilih)
             startDate = getDateOnly(selectedDate);
             endDate = startDate; 
         }
@@ -997,9 +1021,9 @@ function showReport(filterType = 'today', dateInputTrigger = false){
             return;
         }
         const selDateObj = new Date(selectedDate);
-        if (selDateObj.getDate() === 1) { // Jika tanggal 1, anggap ingin laporan bulanan
+        if (selDateObj.getDate() === 1) { 
             reportPeriod = `Bulan ${selDateObj.toLocaleDateString('id-ID', {month:'long', year:'numeric'})}`;
-            activeFilter = 'month'; // Set filter type ke month untuk logika grafik
+            activeFilter = 'month'; 
         } else {
             reportPeriod = selDateObj.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
             activeFilter = 'daily';
@@ -1034,7 +1058,6 @@ function renderSalesGraph(transactions, filterType, selectedDate) {
     const now = new Date();
 
     if (filterType === 'today' || filterType === 'yesterday' || filterType === 'daily') {
-        // Harian (Per Jam)
         title = "Grafik Penjualan Harian (Per Jam)";
         for (let i = 0; i < 24; i++) {
             labels.push(`${i}:00`);
@@ -1047,7 +1070,6 @@ function renderSalesGraph(transactions, filterType, selectedDate) {
             }
         });
     } else if (filterType === 'month' || selectedDate) {
-        // Bulanan (Per Hari)
         title = "Grafik Penjualan Per Hari";
         let dateMap = {};
         let start, end;
@@ -1056,19 +1078,13 @@ function renderSalesGraph(transactions, filterType, selectedDate) {
             start = new Date(now.getFullYear(), now.getMonth(), 1);
             end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         } else if (selectedDate) {
-            // Logika untuk Laporan Bulanan dari Tanggal Spesifik
             const selectedDateObj = new Date(selectedDate);
             const selectedMonth = selectedDateObj.getMonth();
             const selectedYear = selectedDateObj.getFullYear();
             
-            // Jika filter harian terpilih, kembali ke grafik harian
             if (filterType === 'daily' && getDateOnly(selectedDateObj) === getDateOnly(selectedDateObj)) {
-                 // Cek jika tanggal yang dipilih adalah Hari Ini, tampilkan laporan Harian
                 if (getDateOnly(selectedDateObj) === getDateOnly(now)) {
-                    // return renderSalesGraph(transactions, 'today', selectedDate); // Sudah dihandle di atas
                 } else {
-                    // Jika bukan Hari Ini, tetap Harian (Per Jam)
-                     return renderSalesGraph(transactions, 'daily', selectedDate);
                 }
             }
             
@@ -1133,32 +1149,76 @@ function renderSalesGraph(transactions, filterType, selectedDate) {
     });
 }
 
+// FUNGSI RENDER RINGKASAN BARU (Card Layout)
 function renderSummary(filteredTrx, filter) {
     const root = $("laporanSummary");
+    // Tambahkan div baru untuk detail outlet/pembayaran
+    const detailRoot = $("laporanDetailSummary"); 
+
+    // Hitung total
     const totalSales = filteredTrx.reduce((acc, t) => acc + t.total, 0);
     const totalSubtotal = filteredTrx.reduce((acc, t) => acc + (t.subtotal || t.total), 0);
     const totalDiscount = filteredTrx.reduce((acc, t) => acc + (t.discountAmount || 0), 0);
     const totalCount = filteredTrx.length;
     
+    // Hitung Sales by Outlet
     let salesByOutlet = {};
     filteredTrx.forEach(t => {
-        const outlet = t.orderType || 'N/A';
+        const outlet = t.orderType || 'Offline';
         salesByOutlet[outlet] = (salesByOutlet[outlet] || 0) + t.total;
     });
+
+    // Hitung Sales by Payment Method
+    let salesByPayment = {};
+    filteredTrx.forEach(t => {
+        const method = t.paymentMethod || 'Cash';
+        salesByPayment[method] = (salesByPayment[method] || 0) + t.total;
+    });
     
+    // --- Render Ringkasan Utama (Cards) ---
+    root.innerHTML = `
+        <div class="summary-card card-sales">
+            <h4>PENJUALAN BERSIH</h4>
+            <div class="value">${formatRp(totalSales)}</div>
+        </div>
+        <div class="summary-card card-count">
+            <h4>TOTAL TRANSAKSI</h4>
+            <div class="value">${totalCount} Nota</div>
+        </div>
+        <div class="summary-card card-discount">
+            <h4>DISKON TOTAL</h4>
+            <div class="value">${formatRp(totalDiscount)}</div>
+        </div>
+        <div class="summary-card card-subtotal">
+            <h4>SUBTOTAL KOTOR</h4>
+            <div class="value">${formatRp(totalSubtotal)}</div>
+        </div>
+    `;
+    
+    // --- Render Detail (Outlet & Payment) ---
     let outletHtml = Object.entries(salesByOutlet).map(([type, total]) => 
-        `<p style="margin-left: 10px;">- ${type}: **${formatRp(total)}**</p>`
+        `<li>${type} <span>${formatRp(total)}</span></li>`
+    ).join('');
+    
+    let paymentHtml = Object.entries(salesByPayment).map(([method, total]) => 
+        `<li>${method} <span>${formatRp(total)}</span></li>`
     ).join('');
 
-    root.innerHTML = `
-        <p>Periode Laporan: **${filter}**</p> 
-        <p>Total Transaksi: **${totalCount}** Nota</p>
-        <p style="font-weight: bold; margin-top: 10px;">Sales Outlet:</p>
-        ${outletHtml}
-        <p style="font-size: 1.0em; color: #666; margin-top: 10px;">Subtotal Kotor: **${formatRp(totalSubtotal)}**</p>
-        <p style="font-size: 1.0em; color: #c62828;">Diskon Total: **${formatRp(totalDiscount)}**</p>
-        <p style="font-size: 1.2em; color: #2e7d32;">Total Penjualan Bersih: **${formatRp(totalSales)}**</p>
+    detailRoot.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <h5 style="margin-top: 0; color: #1976d2;">Penjualan Berdasarkan Outlet (${filter})</h5>
+                <ul class="detail-list">${outletHtml}</ul>
+            </div>
+            <div>
+                <h5 style="margin-top: 0; color: #1976d2;">Penjualan Berdasarkan Metode Bayar (${filter})</h5>
+                <ul class="detail-list">${paymentHtml}</ul>
+            </div>
+        </div>
     `;
+
+    // Update periode di H3
+    const reportTitle = document.querySelector('#laporanPage h3').innerText = `Laporan Penjualan (${filter})`;
 }
 
 function renderSalesByMenu(filteredTrx) {
@@ -1167,11 +1227,15 @@ function renderSalesByMenu(filteredTrx) {
 
     filteredTrx.forEach(t => {
         t.items.forEach(item => {
+            const finalPrice = item.finalPrice !== undefined ? item.finalPrice : (item.price * item.qty - (item.discountAmount || 0)); 
+            const itemTotal = item.price * item.qty;
+
             if (!menuMix[item.name]) { 
-                menuMix[item.name] = { qty: 0, total: 0 };
+                menuMix[item.name] = { qty: 0, total: 0, finalSales: 0 };
             }
             menuMix[item.name].qty += item.qty;
-            menuMix[item.name].total += item.price * item.qty;
+            menuMix[item.name].total += itemTotal; 
+            menuMix[item.name].finalSales += finalPrice; 
         });
     });
 
@@ -1184,7 +1248,7 @@ function renderSalesByMenu(filteredTrx) {
 
     let html = `<table class="report-table">
         <thead>
-            <tr><th>Nama Menu (Ukuran/Topping)</th><th>QTY Terjual</th><th>Total Penjualan</th></tr>
+            <tr><th>Nama Menu (Ukuran/Topping)</th><th>QTY Terjual</th><th>Penjualan Bersih</th></tr>
         </thead>
         <tbody>`;
 
@@ -1193,7 +1257,7 @@ function renderSalesByMenu(filteredTrx) {
             <tr>
                 <td>${name}</td>
                 <td>${data.qty}</td>
-                <td>${formatRp(data.total)}</td>
+                <td>${formatRp(data.finalSales)}</td>
             </tr>
         `;
     });
@@ -1219,21 +1283,28 @@ function renderTransactionDetails(filteredTrx) {
         d.style.borderBottom = "1px solid #eee";
         d.style.marginBottom = "10px";
         
-        const noteDisplay = t.note ? t.note : 'Tunai';
+        const noteDisplay = t.note ? t.note : t.orderType;
 
         const deleteBtn = isManager ? 
             `<button class='btn danger' style='padding: 5px 10px; font-size: 0.8em; margin-top: 5px; background: #c62828;' onclick='deleteTransaction(${t.id})'>Hapus Transaksi</button>` : '';
 
-        const discountDisplay = (t.discount && t.discountAmount) ? 
-            `<p style="margin: 5px 0; color: #d32f2f;">Diskon (${t.discount.name}): -${formatRp(t.discountAmount)}</p>` : ''; 
+        const totalDiscount = t.discountAmount || 0;
+        const discountDisplay = totalDiscount > 0 ? 
+            `<p style="margin: 5px 0; color: #d32f2f;">Total Diskon: -${formatRp(totalDiscount)}</p>` : ''; 
         
-        const subtotalDisplay = t.subtotal ? `Subtotal: ${formatRp(t.subtotal)}` : `Subtotal: ${formatRp(t.total)}`;
+        const subtotalDisplay = t.subtotal ? `Subtotal Kotor: ${formatRp(t.subtotal)}` : `Subtotal: ${formatRp(t.total)}`;
         const paymentMethod = t.paymentMethod || 'Tunai'; 
+        
+        const itemDetails = t.items.map(i => {
+            const disc = i.discountAmount > 0 ? ` (Disc: ${formatRp(i.discountAmount)})` : '';
+            return `${i.name} x${i.qty} - ${formatRp(i.finalPrice)}${disc}`;
+        }).join('<br>');
+
 
         d.innerHTML=`
-            <div>**Nota ID: ${t.id}**</div>
+            <div><strong>Nota ID: ${t.id}</strong></div>
             <div>Waktu: ${new Date(t.date).toLocaleString("id-ID")}<br>Pelanggan/Driver: ${noteDisplay}<br>${t.orderType} | Bayar: ${paymentMethod} oleh Kasir: ${t.user}</div>
-            <p style="margin: 5px 0;">Item: ${t.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+            <p style="margin: 5px 0; font-size: 0.9em;"><strong>Item Detail:</strong><br>${itemDetails}</p>
             <div style="margin: 5px 0;">${subtotalDisplay}</div>
             ${discountDisplay} 
             <div style="font-weight: bold; color: #2e7d32;">Total Akhir: ${formatRp(t.total)}</div>
@@ -1244,8 +1315,6 @@ function renderTransactionDetails(filteredTrx) {
 }
 
 function printClosing(){
-    if(!currentUser || currentUser.role!=='Manager') return alert("Hanya Manajer yang dapat mencetak closing report.");
-    
     const today = new Date().toLocaleDateString("id-ID");
     const trx = store.transactions.filter(t => new Date(t.date).toLocaleDateString("id-ID") === today);
 
@@ -1277,15 +1346,18 @@ function printClosing(){
 
     const menuMix = {};
     trx.forEach(t => t.items.forEach(item => {
+        const finalPrice = item.finalPrice !== undefined ? item.finalPrice : (item.price * item.qty - (item.discountAmount || 0));
+        
         if (!menuMix[item.name]) { 
-            menuMix[item.name] = { qty: 0, total: 0 };
+            menuMix[item.name] = { qty: 0, total: 0, finalSales: 0 };
         }
         menuMix[item.name].qty += item.qty;
         menuMix[item.name].total += item.price * item.qty;
+        menuMix[item.name].finalSales += finalPrice;
     }));
     
     const createReportLine = (name, data) => { 
-        const totalRpStr = formatRp(data.total).padStart(12); 
+        const totalRpStr = formatRp(data.finalSales).padStart(12); 
         const namePart = `${name.substring(0, MAX_WIDTH - 15)} x${data.qty}`; 
         const space = MAX_WIDTH - namePart.length - totalRpStr.length;
         return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`; 
@@ -1327,6 +1399,7 @@ ${'__________________________________________'.substring(0, MAX_WIDTH)}
 TERIMA KASIH, LAPORAN SELESAI
         </pre>
     `);
+    
     w.print();
 }
 
@@ -1337,7 +1410,7 @@ function printReport() {
     if (dateInputTrigger) {
         const selectedDate = $("reportDate").value;
         const selDateObj = new Date(selectedDate);
-        if (selDateObj.getDate() === 1) { // Jika tanggal 1, anggap ingin laporan bulanan
+        if (selDateObj.getDate() === 1) { 
             activeFilter = 'month'; 
         } else {
             activeFilter = 'daily';
@@ -1381,9 +1454,12 @@ function printReport() {
 
     const menuMix = {};
     filteredTrx.forEach(t => t.items.forEach(item => {
-        if (!menuMix[item.name]) { menuMix[item.name] = { qty: 0, total: 0 }; }
+        const finalPrice = item.finalPrice !== undefined ? item.finalPrice : (item.price * item.qty - (item.discountAmount || 0));
+        
+        if (!menuMix[item.name]) { menuMix[item.name] = { qty: 0, total: 0, finalSales: 0 }; }
         menuMix[item.name].qty += item.qty;
         menuMix[item.name].total += item.price * item.qty;
+        menuMix[item.name].finalSales += finalPrice;
     }));
 
     const sortedMenu = Object.entries(menuMix).sort(([, a], [, b]) => b.qty - a.qty);
@@ -1396,7 +1472,7 @@ function printReport() {
         return `${label}${Array(space > 0 ? space : 1).join('.')}${valStr}`; 
     };
     const createReportLine = (name, data) => { 
-        const totalRpStr = formatRp(data.total).padStart(12); 
+        const totalRpStr = formatRp(data.finalSales).padStart(12); 
         const namePart = `${name.substring(0, MAX_WIDTH - 15)} x${data.qty}`; 
         const space = MAX_WIDTH - namePart.length - totalRpStr.length;
         return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`; 
@@ -1443,6 +1519,7 @@ ${'__________________________________________'.substring(0, MAX_WIDTH)}
 LAPORAN SELESAI
         </pre>
     `);
+    
     w.print();
 }
 
