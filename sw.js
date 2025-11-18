@@ -1,5 +1,5 @@
 // Nama cache
-const CACHE_NAME = 'jif-pizza-pos-cache-v1'; 
+const CACHE_NAME = 'jif-pizza-pos-cache-v2'; // PERUBAHAN 1: Update versi cache
 
 // Daftar aset yang akan di-cache
 const urlsToCache = [
@@ -7,8 +7,9 @@ const urlsToCache = [
   'index.html',
   'manifest.json',
   'pizza.jpg', 
-  // Jika Anda punya logo.png, masukkan juga
-  'logo.png' 
+  'logo.png',
+  '1000208468.jpg', // PERUBAHAN 2: Tambahkan gambar QRIS baru
+  // Jika Anda memiliki file CSS/JS terpisah, tambahkan juga di sini
 ];
 
 // Instalasi Service Worker
@@ -33,7 +34,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            // Hapus cache lama
+            // Hapus cache lama (v1)
             return caches.delete(cacheName);
           }
         })
