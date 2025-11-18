@@ -952,81 +952,95 @@ const getAbbr = (cat) => {
 }
 
 // REVISI 4: Tambahkan queueNumber ke parameter
-function printStruk(subtotal, totalDiscount, finalTotal, bayar, kembali, note, paymentMethod, queueNumber, copyType){
+function printStruk(subtotal, totalDiscount, finalTotal, bayar, kembali, note, paymentMethod, queueNumber, copyType) {
+
     const now = new Date().toLocaleString("id-ID");
-    
-    // REVISI 4: Memodifikasi createStrukLine untuk menyingkat kategori
-    const createStrukLine = (item) => {
-        const totalStr = formatRp(item.finalPrice).padStart(8); // Dikecilkan untuk 30
+    const MAX_WIDTH = 30;  // 58mm ≈ 30 karakter per baris
 
-        let printName = item.name; 
-        const abbr = getAbbr(item.category);
-        if (abbr) {
-            // Ganti kategori lengkap dengan singkatan di dalam kurung
-            const regex = new RegExp(`\\(${item.category}\\)`, 'i');
-            printName = printName.replace(regex, `(${abbr})`);
-        }
-        
-        // Batasi nama item untuk padding
-        const namePart = `${printName.substring(0, MAX_WIDTH - 11)} x${item.qty}`; 
-        
-        const space = MAX_WIDTH - namePart.length - totalStr.length;
-        let line = `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalStr}`;
-        
-        if (item.discountAmount > 0) {
-            // REVISI 1: Ubah tampilan diskon menjadi angka Rupiah
-            const discountStr = ` Disc: -${formatRp(item.discountAmount).padStart(8)}`;
-            line += `\n${discountStr.padStart(MAX_WIDTH)}`;
-        }
-        return line;
+    const ESC = "\x1B";
+    const GS  = "\x1D";
+
+    let escpos = "";
+
+    function line(text="") {
+        escpos += text + "\n";
     }
-    const itemDetails = cart.map(i => createStrukLine(i)).join('\n');
-    
-    const kasirLine = padLine("Kasir: ", currentUser ? currentUser.email : "-");
-    const dateLine = padLine("Waktu: ", now);
-    const noteLine = padLine("Catatan: ", note);
-    const paymentLine = padLine("Bayar dg: ", paymentMethod);
-    const totalLine = padLine("TOTAL AKHIR: ", formatRp(finalTotal));
-    const bayarLine = paymentMethod === 'Cash' ? padLine("Bayar: ", formatRp(bayar)) : '';
-    const kembaliLine = (paymentMethod === 'Cash' && kembali > 0) ? padLine("Kembali: ", formatRp(kembali)) : '';
-    const discountLine = totalDiscount > 0 ? padLine("Diskon Total: ", formatRp(totalDiscount)) : '';
-    
-    // REVISI 4: Tambahkan nomor antrian
-    const antrianLine = padLine("No. Antrian: ", `#${queueNumber}`);
 
-    const w=window.open("","_blank");
-    w.document.write(`
-        <pre style='font-family:monospace; font-size: 10px; line-height: 1.2; width: 58mm; max-width: 58mm;'>
- === JIF PIZZA CONDET ===
- ${antrianLine}
- ${kasirLine}
- ${dateLine}
- ${noteLine}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- ${itemDetails.trim()}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- ${discountLine}
- ${padLine("Subtotal Kotor: ", formatRp(subtotal))}
- ${totalLine}
- ${paymentLine}
- ${bayarLine}
- ${kembaliLine}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- ${padLine("Copy Type: ", copyType)}
- ==============================
-     TERIMA KASIH TELAH ORDER
- ==============================
-        </pre>
-    `);
-    
-    w.print();
-}
+    function pad(label, value) {
+        const totalLength = MAX_WIDTH;
+        const text = label + value;
+        if (text.length >= totalLength) return text;
+        return text + " ".repeat(totalLength - text.length);
+    }
+
+    function center(text) {
+        const space = Math.floor((MAX_WIDTH - text.length)/2);
+        return " ".repeat(space) + text;
+    }
+
+    function formatRp(num) {
+        return "Rp " + (num || 0).toLocaleString("id-ID");
+    }
+
+    // HEADER
+    escpos += ESC + "@";      
+    escpos += ESC + "!" + "\x38"; 
+    line(center("JIF PIZZA CONDET"));
+    escpos += ESC + "!" + "\x00"; 
+
+    line(pad("No. Antrian: ", "#" + queueNumber));
+    line(pad("Kasir: ", currentUser ? currentUser.email : "-"));
+    line(pad("Waktu: ", now));
+    if (note) line(pad("Catatan: ", note));
+
+    line("-".repeat(MAX_WIDTH));
+
+    // ITEMS
+    cart.forEach(item => {
+        const price = formatRp(item.finalPrice);
+        let nameQty = `${item.name.substring(0, MAX_WIDTH - 10)} x${item.qty}`;
+        const spaces = MAX_WIDTH - nameQty.length - price.length;
+        line(nameQty + " ".repeat(Math.max(1, spaces)) + price);
+
+        if (item.discountAmount > 0) {
+            line("  Disc: -" + formatRp(item.discountAmount));
+        }
+    });
+
+    line("-".repeat(MAX_WIDTH));
+
+    if (totalDiscount > 0) 
+        line(pad("Diskon Total: ", formatRp(totalDiscount)));
+
+    line(pad("Subtotal: ", formatRp(subtotal)));
+    line(pad("TOTAL AKHIR: ", formatRp(finalTotal)));
+
+    line(pad("Bayar dg: ", paymentMethod));
+
+    if (paymentMethod === "Cash") {
+        line(pad("Bayar: ", formatRp(bayar)));
+        if (kembali > 0) line(pad("Kembali: ", formatRp(kembali)));
+    }
+
+    line("-".repeat(MAX_WIDTH));
+    line(pad("Copy: ", copyType));
+
+    line(center("TERIMA KASIH"));
+    line(center("SELAMAT MENIKMATI"));
+
+    // cut & beep
+    escpos += GS + "V" + "\x41" + "\x03";
+    escpos += "\x07";
+
+    // SEND to RAWBT
+    window.location.href = "rawbt://print?data=" + btoa(escpos);
+            }
 
 // REVISI 2: Perbaiki masalah escaping dengan JSON.stringify lalu parse ulang
 function reprintTransaction(transactionStr){
-    // Parsing string JSON kembali menjadi objek
+
     const transaction = JSON.parse(transactionStr);
-    
+
     const tempCart = transaction.items.map(item => ({ 
         name: item.name, 
         price: item.price, 
@@ -1036,44 +1050,43 @@ function reprintTransaction(transactionStr){
         discountAmount: item.discountAmount || 0, 
         finalPrice: item.finalPrice 
     }));
+
     const isCash = transaction.paymentMethod === 'Cash';
     const finalTotal = transaction.total;
-    // Karena data bayar dan kembali tidak disimpan, kita asumsikan Bayar = Total Akhir jika non-Cash.
-    const bayar = isCash ? (transaction.subtotal || transaction.total) : finalTotal;
+    const bayar = isCash ? (transaction.bayar || finalTotal) : finalTotal;
     const kembali = isCash ? (bayar - finalTotal) : 0;
-    
-    // Simpan cart lama
+
     const originalCart = [...cart];
-    cart = tempCart; 
-    
-    // Panggil fungsi cetak ganda. Ambil note dan queueNumber dari transaksi.
+    cart = tempCart;
+
+    // Cetak Customer
     printStruk(
-        transaction.subtotal || finalTotal, 
-        transaction.discountAmount || 0, 
-        finalTotal, 
-        bayar, 
-        kembali, 
-        transaction.note || transaction.orderType, 
-        transaction.paymentMethod, 
-        transaction.queueNumber || 0, // REVISI 4: Ambil queueNumber dari transaksi
+        transaction.subtotal || finalTotal,
+        transaction.totalDiscount || 0,
+        finalTotal,
+        bayar,
+        kembali,
+        transaction.note || transaction.orderType,
+        transaction.paymentMethod,
+        transaction.queueNumber || 0,
         "Customer (REPRINT)"
     );
+
+    // Cetak Kasir
     printStruk(
-        transaction.subtotal || finalTotal, 
-        transaction.discountAmount || 0, 
-        finalTotal, 
-        bayar, 
-        kembali, 
-        transaction.note || transaction.orderType, 
-        transaction.paymentMethod, 
-        transaction.queueNumber || 0, // REVISI 4: Ambil queueNumber dari transaksi
+        transaction.subtotal || finalTotal,
+        transaction.totalDiscount || 0,
+        finalTotal,
+        bayar,
+        kembali,
+        transaction.note || transaction.orderType,
+        transaction.paymentMethod,
+        transaction.queueNumber || 0,
         "Kasir (REPRINT)"
     );
-    
-    // Kembalikan cart ke keadaan semula
+
     cart = originalCart;
-    alert("Cetak ulang selesai!");
-}
+        }
 
 // ======================================================================
 // FUNGSI MANAJEMEN MENU & DISKON
@@ -1415,97 +1428,77 @@ function renderLaporanList(filteredTrx) {
     root.appendChild(table);
 }
 // PERMINTAAN 5: Revisi fungsi printClosing untuk 58mm (MAX_WIDTH 30)
-function printClosing(){
-    const today = new Date().toLocaleDateString("id-ID");
-    const trx = store.transactions.filter(t => new Date(t.date).toLocaleDateString("id-ID") === today);
-    if(trx.length === 0) return alert("Tidak ada transaksi hari ini untuk dicetak.");
+function printClosing() {
 
-    let totalSales = 0;
-    let totalDiscount = 0;
-    let totalSubtotal = 0;
-    let salesByPayment = {};
-    let menuMix = {};
+    const MAX_WIDTH = 30; // 58mm printer
+    const ESC = "\x1B";
+    const GS  = "\x1D";
 
-    trx.forEach(t => {
-        totalSales += t.total;
-        totalDiscount += t.discountAmount;
-        totalSubtotal += t.subtotal;
+    let esc = "";
 
-        const method = t.paymentMethod || 'Cash';
-        salesByPayment[method] = (salesByPayment[method] || 0) + t.total;
+    function line(t = "") { esc += t + "\n"; }
 
-        t.items.forEach(item => {
-            const name = item.name;
-            const itemTotal = item.finalPrice; // Sudah bersih dari diskon
-            menuMix[name] = menuMix[name] || { qty: 0, finalSales: 0 };
-            menuMix[name].qty += item.qty;
-            menuMix[name].finalSales += itemTotal;
-        });
-    });
-    
-    const sortedPayment = Object.entries(salesByPayment).sort(([, a], [, b]) => b - a);
-    const paymentDetail = sortedPayment.map(([method, total]) => padLine(method, formatRp(total))).join('\n');
-    
-    // REVISI 4: Fungsi untuk mendapatkan singkatan kategori (diambil dari printStruk)
-    const getAbbr = (cat) => {
-        if (cat === 'Large') return 'L';
-        if (cat === 'Reguler') return 'R';
-        if (cat === 'Separuh') return 'S';
-        if (cat === 'Extra') return 'EX';
-        return '';
+    function center(t = "") {
+        const pad = Math.floor((MAX_WIDTH - t.length) / 2);
+        return " ".repeat(pad > 0 ? pad : 0) + t;
     }
-    
-    // REVISI 4: Modifikasi createReportLine untuk menyingkat kategori
-    const createReportLine = (name, data) => {
-        const totalRpStr = formatRp(data.finalSales).padStart(8);
-        
-        let printName = name; 
-        const categories = ['Large', 'Reguler', 'Separuh', 'Extra'];
-        const abbrMap = {'Large': 'L', 'Reguler': 'R', 'Separuh': 'S', 'Extra': 'EX'};
 
-        categories.forEach(cat => {
-            if (name.includes(`(${cat})`)) {
-                printName = name.replace(`(${cat})`, `(${abbrMap[cat]})`);
-            }
-        });
-        
-        const namePart = `${printName.substring(0, MAX_WIDTH - 11)} x${data.qty}`;
-        const space = MAX_WIDTH - namePart.length - totalRpStr.length;
-        return `${namePart}${Array(space > 0 ? space : 1).join('.')}${totalRpStr}`;
-    };
+    function pad(label, value) {
+        const text = label + value;
+        if (text.length >= MAX_WIDTH) return text;
+        return text + " ".repeat(MAX_WIDTH - text.length);
+    }
 
-    const sortedMenu = Object.entries(menuMix).sort(([, a], [, b]) => b.qty - a.qty);
-    const menuDetail = sortedMenu.map(([name, data]) => createReportLine(name, data)).join('\n');
-    const w=window.open("","_blank");
-    const kasirLine = padLine("Manajer/Kasir: ", currentUser ? currentUser.email : "-");
-    const dateLine = padLine("Tanggal Cetak: ", new Date().toLocaleString("id-ID"));
-    const totalTrxLine = padLine("Total Transaksi: ", `${trx.length} Nota`);
+    function formatRp(x) {
+        return "Rp " + Number(x || 0).toLocaleString("id-ID");
+    }
 
-    w.document.write(`
-        <pre style='font-family:monospace; font-size: 10px; line-height: 1.2; width: 58mm; max-width: 58mm;'>
- === CLOSING REPORT HARIAN ===
- Outlet: JIF PIZZA CONDET
- ${kasirLine}
- ${dateLine}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- RINGKASAN PENJUALAN
- ${totalTrxLine}
- ${padLine("Subtotal Kotor: ", formatRp(totalSubtotal))}
- ${padLine("Diskon Total: ", formatRp(totalDiscount))}
- ${padLine("TOTAL PENJUALAN AKHIR: ", formatRp(totalSales))}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- SALES BY PAYMENT METHOD
- ${paymentDetail}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- SALES BY MENU (PRODUCT MIX)
- ${menuDetail.trim()}
- ${'______________________________'.substring(0, MAX_WIDTH)}
- ==============================
- TERIMA KASIH, LAPORAN SELESAI
-        </pre>
-    `);
-    w.print();
-}
+    // --- HEADER ---
+    esc += ESC + "@"; 
+    esc += ESC + "!" + "\x38";
+    line(center("CLOSING REPORT HARIAN"));
+    esc += ESC + "!" + "\x00";
+    line(center("JIF PIZZA CONDET"));
+    line("=".repeat(MAX_WIDTH));
+
+    line(pad("Manajer/Kasir: ", currentUser ? currentUser.email : "-"));
+    line(pad("Tanggal Cetak: ", new Date().toLocaleString("id-ID")));
+    line("-".repeat(MAX_WIDTH));
+
+    // --- SUMMARY ---
+    line("RINGKASAN PENJUALAN");
+    line(pad("Total Transaksi:", `${trx.length} Nota`));
+    line(pad("Subtotal Kotor:", formatRp(totalSubtotal)));
+    line(pad("Diskon Total:", formatRp(totalDiscount)));
+    line(pad("TOTAL PENJUALAN:", formatRp(totalSales)));
+    line("-".repeat(MAX_WIDTH));
+
+    // --- PAYMENT DETAIL ---
+    line("SALES BY PAYMENT METHOD");
+    paymentDetail.split("\n").forEach(d => {
+        if (d.trim() !== "") line(d.substring(0, MAX_WIDTH));
+    });
+    line("-".repeat(MAX_WIDTH));
+
+    // --- MENU MIX DETAIL ---
+    line("SALES BY MENU (PRODUCT MIX)");
+    menuDetail.split("\n").forEach(d => {
+        if (d.trim() !== "") line(d.substring(0, MAX_WIDTH));
+    });
+    line("-".repeat(MAX_WIDTH));
+
+    // --- FOOTER ---
+    line(center("=============================="));
+    line(center("TERIMA KASIH, LAPORAN SELESAI"));
+    line(center("=============================="));
+
+    // CUT + BEEP
+    esc += GS + "V" + "\x41" + "\x03";
+    esc += "\x07";
+
+    // SEND TO RAWBT
+    window.location.href = "rawbt://print?data=" + btoa(esc);
+        }
 // PERMINTAAN 5: Revisi fungsi printReport untuk 58mm (MAX_WIDTH 30)
 function printReport() {
     const dateInputTrigger = $("reportDate").value ? true : false;
@@ -1528,16 +1521,16 @@ function printReport() {
     // Mendapatkan data transaksi
     const { filteredTrx, reportPeriod: period } = getFilteredTransactions(activeFilter, dateInputTrigger);
     reportPeriod = period; 
-    
-    if(filteredTrx.length === 0) return alert("Tidak ada transaksi untuk periode ini.");
-    
-    let totalSales = 0;
-    let totalDiscount = 0;
+    t totalDiscount = 0;
     let totalSubtotal = 0;
     let salesByOutlet = {};
     let menuMix = {};
 
-    filteredTrx.forEach(t => {
+    filteredTrx
+    if(filteredTrx.length === 0) return alert("Tidak ada transaksi untuk periode ini.");
+    
+    let totalSales = 0;
+    le.forEach(t => {
         totalSales += t.total;
         totalDiscount += t.discountAmount;
         totalSubtotal += t.subtotal;
@@ -1621,11 +1614,85 @@ ${menuDetail.trim()}
 ${'______________________________'.substring(0, MAX_WIDTH)}
 ==============================
 LAPORAN SELESAI
-        </pre>
-    `);
-    
-    w.print();
-}
+function printReport() {
+
+    const MAX_WIDTH = 30; // 58 mm
+
+    const ESC = "\x1B";
+    const GS  = "\x1D";
+
+    let esc = "";
+
+    // Helper
+    function line(t = "") { esc += t + "\n"; }
+
+    function center(t = "") {
+        const pad = Math.floor((MAX_WIDTH - t.length) / 2);
+        return " ".repeat(pad > 0 ? pad : 0) + t;
+    }
+
+    function pad(label, value) {
+        const text = label + value;
+        if (text.length >= MAX_WIDTH) return text;
+        return text + " ".repeat(MAX_WIDTH - text.length);
+    }
+
+    function formatRp(x) {
+        return "Rp " + Number(x || 0).toLocaleString("id-ID");
+    }
+
+
+    // =============== HEADER ===============
+    esc += ESC + "@";               // reset printer
+    esc += ESC + "!" + "\x38";      // bold large text
+    line(center("LAPORAN PERIODE"));
+    esc += ESC + "!" + "\x00";
+    line(center("JIF PIZZA CONDET"));
+    line("=".repeat(MAX_WIDTH));
+
+    line("Periode: " + reportPeriod);
+    line(pad("Manajer/Kasir: ", currentUser ? currentUser.email : "-"));
+    line(pad("Tanggal Cetak: ", new Date().toLocaleString("id-ID")));
+    line("-".repeat(MAX_WIDTH));
+
+
+    // =============== SUMMARY ===============
+    line("RINGKASAN PENJUALAN");
+    line(pad("Total Transaksi: ", `${filteredTrx.length} Nota`));
+    line(pad("Subtotal Kotor: ", formatRp(totalSubtotal)));
+    line(pad("Diskon Total: ", formatRp(totalDiscount)));
+    line(pad("TOTAL PENJUALAN: ", formatRp(totalSales)));
+    line("-".repeat(MAX_WIDTH));
+
+
+    // =============== SALES BY OUTLET ===============
+    line("SALES BY OUTLET");
+    outletDetail.split("\n").forEach(x => {
+        if (x.trim() !== "") line(x.substring(0, MAX_WIDTH));
+    });
+    line("-".repeat(MAX_WIDTH));
+
+
+    // =============== PRODUCT MIX (MENU) ===============
+    line("SALES BY MENU (PRODUCT MIX)");
+    menuDetail.split("\n").forEach(x => {
+        if (x.trim() !== "") line(x.substring(0, MAX_WIDTH));
+    });
+    line("-".repeat(MAX_WIDTH));
+
+
+    // =============== FOOTER ===============
+    line(center("=============================="));
+    line(center("LAPORAN SELESAI"));
+    line(center("=============================="));
+
+    // CUT + BEEP
+    esc += GS + "V" + "\x41" + "\x03";
+    esc += "\x07";
+
+    // SEND TO RAWBT
+    window.location.href = "rawbt://print?data=" + btoa(esc)
+    }
 const padLine = (label, value) => {
     const valStr = String(value);
     const labelLen = label.length;
